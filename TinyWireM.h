@@ -57,7 +57,7 @@ class USI_TWI
     void    begin();
     void    beginTransmission(uint8_t);
     size_t  write(uint8_t);
-    uint8_t endTransmission();
+    uint8_t endTransmission(unsigned char sendStop = 1);
     uint8_t requestFrom(uint8_t, uint8_t);
     int     read(); 
     int     available(); 

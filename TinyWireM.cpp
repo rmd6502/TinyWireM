@@ -56,10 +56,10 @@ size_t USI_TWI::write(uint8_t data){ // buffers up data to send
   return 1;
 }
 
-uint8_t USI_TWI::endTransmission(){ // actually sends the buffer
+uint8_t USI_TWI::endTransmission(unsigned char sendStop){ // actually sends the buffer
   bool xferOK = false;
   uint8_t errorCode = 0;
-  xferOK = USI_TWI_Start_Read_Write(USI_Buf,USI_BufIdx+1); // core func that does the work
+  xferOK = USI_TWI_Start_Read_Write(USI_Buf,USI_BufIdx+1,sendStop); // core func that does the work
   USI_BufIdx = 0;
   if (xferOK) return 0;
   else {                                  // there was an error

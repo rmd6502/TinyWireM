@@ -24,7 +24,7 @@
 #include <avr/io.h>
 #include "USI_TWI_Master.h"
 
-unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char * , unsigned char );
+unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char * , unsigned char , unsigned char sendStop = 1 );
 unsigned char USI_TWI_Master_Transfer( unsigned char );
 unsigned char USI_TWI_Master_Stop( void );
 unsigned char USI_TWI_Master_Start( void );
@@ -99,12 +99,12 @@ unsigned char USI_TWI_Start_Random_Read( unsigned char *msg, unsigned char msgSi
  Success or error code is returned. Error codes are defined in 
  USI_TWI_Master.h
 ---------------------------------------------------------------*/
-unsigned char USI_TWI_Start_Read_Write( unsigned char *msg, unsigned char msgSize)
+unsigned char USI_TWI_Start_Read_Write( unsigned char *msg, unsigned char msgSize, unsigned char sendStop)
 {
     
 	USI_TWI_state.errorState = 0;				// Clears all mode bits also
   
-	return (USI_TWI_Start_Transceiver_With_Data( msg, msgSize));
+	return (USI_TWI_Start_Transceiver_With_Data( msg, msgSize, sendStop));
 	
 }
 /*---------------------------------------------------------------
@@ -126,7 +126,7 @@ unsigned char USI_TWI_Start_Read_Write( unsigned char *msg, unsigned char msgSiz
  Success or error code is returned. Error codes are defined in 
  USI_TWI_Master.h
 ---------------------------------------------------------------*/
-unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned char msgSize)
+unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned char msgSize, unsigned char sendStop)
 {
   unsigned char const tempUSISR_8bit = (1<<USISIF)|(1<<USIOIF)|(1<<USIPF)|(1<<USIDC)|      // Prepare register value to: Clear flags, and
                                  (0x0<<USICNT0);                                     // set USI to shift 8 bits i.e. count 16 clock edges.
@@ -248,10 +248,10 @@ unsigned char USI_TWI_Start_Transceiver_With_Data( unsigned char *msg, unsigned 
     }
   }while( --msgSize) ;                             // Until all data sent/received.
   
-  if (!USI_TWI_Master_Stop())
+  if (sendStop && !USI_TWI_Master_Stop()) 
   {
 	return (FALSE);                           // Send a STOP condition on the TWI bus.
-	}
+  }
 
 /* Transmission successfully completed*/
   return (TRUE);
